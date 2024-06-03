@@ -1,72 +1,69 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+
 import "react-toastify/dist/ReactToastify.css";
 
 const FormRepo = () => {
+  const navigate = useNavigate();
   const [url, setRepositoryLink] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [credential, setCredential] = useState("");
-  const [error, setError] = useState(null);
+
+  const [userId, setUserId] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-    try {
-      const scanRepo = {
-        url: url,
-      };
-      const response = await axios.post(`http://localhost:4000/api/detect/check`, scanRepo);
-      const { data } = response;
 
-      if (data && data.credentialsFound) {
-        setCredential(data.credentialsFound);
-        toast.success("Scan successful");
+    try {
+      const userDataString = localStorage.getItem("user");
+      const userData = JSON.parse(userDataString);
+
+      if (userData && userData.id) {
+        // Pastikan data pengguna ada dan memiliki properti id
+        const userIdFromStorage = parseInt(userData.id);
+
+        console.log("User ID:", userIdFromStorage);
+
+        // Simpan userId ke dalam state lokal
+        setUserId(userIdFromStorage);
+
+        const response = await axios.post(`http://localhost:4000/api/detectt/deteksi`, { url, userId: userIdFromStorage });
+        navigate("/repo");
+        toast.success("Scanning Is Success!!");
       } else {
-        toast.info("No credentials found");
-        setCredential("");
+        console.log("Data pengguna tidak lengkap atau tidak ditemukan.");
+        toast.error("Failed to fetch user data.");
       }
     } catch (error) {
-      console.error("Error scanning repo:", error);
-      setError("Scan failed");
-    } finally {
-      setLoading(false);
+      console.log(error);
+      toast.error("Scan Failed");
     }
   };
 
   return (
-    <div className="container mx-auto mt-16">
-      <div className="max-w-md mx-auto bg-white p-8 border rounded-lg shadow-lg">
-        <h2 className="text-lg font-semibold mb-4">Scan Your Repository</h2>
+    <div className="  bg-white w-full h-screen mt-[67px]  sm:p-12 lg:p-24">
+      <div className="w-full md:w-[900px] mx-auto bg-gray-200 p-12 border hover:rounded-md shadow-lg h-auto md:h-[400px]">
+        <h2 className="text-base md:text-lg lg:text-xl font-semibold mb-4 md:mb-7 text-center border-b-2 border-blue-500 text-black px-1 py-1 shadow-md">Scan Your Repository</h2>
+
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="repositoryLink" className="block text-sm font-medium text-gray-700 mb-2">
-              Repository URL:
-            </label>
+          <div className="mb-4 relative inline-block border mt-5 w-full">
             <input
               type="text"
               id="repositoryLink"
               name="repositoryLink"
               value={url}
               onChange={(e) => setRepositoryLink(e.target.value)}
-              className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="Enter repository URL"
+              placeholder="Repository Url"
+              className=" px-4 py-2 w-full border-2 border-tartiarty text-sm hover:border-blue-500 duration-200 "
             />
           </div>
-          <div className="flex justify-end">
-            <button type="submit" className={`bg-blue-500 text-white px-4 py-2 rounded-md ${loading ? "opacity-50 cursor-not-allowed" : ""}`} disabled={loading}>
-              {loading ? "Scanning..." : "Scan"}
+
+          <div className="flex justify-start mt-2 ">
+            <button type="submit" disabled={!url} className={` hover:bg-blue-500  hover:scale-110 hover:text-white duration-300 transition-all bg-primary hover:rounded-md text-white px-10 py-2  ${!url && " cursor-not-allowed"}`}>
+              Scan
             </button>
           </div>
         </form>
-        {error && <div className="text-red-500 mt-4">{error}</div>}
-        {credential && (
-          <div className="mt-4">
-            <h3 className="text-lg font-semibold mb-2">Credentials Found:</h3>
-            <pre>{credential}</pre>
-          </div>
-        )}
       </div>
     </div>
   );

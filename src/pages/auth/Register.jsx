@@ -4,7 +4,7 @@ import { TypeAnimation } from "react-type-animation";
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center loginBg">
       <div className="px-4 py-8 bg-white rounded-lg shadow-xl w-full max-w-md">
         <div className="max-w-md w-full space-y-8 overflow-hidden">
           <Header

@@ -11,8 +11,9 @@ const ManageDataContainer = () => {
   };
 
   return (
-    <div className="flex md:flex-row h-screen gap-10">
+    <div className="flex">
       <SidebarAdmin isOpen={isSidebarOpen} onToggleSidebar={handleToggleSidebar} />
+
       <ManageDataContent />
     </div>
   );

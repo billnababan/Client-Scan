@@ -15,7 +15,7 @@ const FormExtra = ({ rememberMe, setRememberMe }) => {
       </div>
 
       <div className="text-sm">
-        <a href="#" className="font-medium text-[#010851] hover:text-gray-500">
+        <a href="/resetPassword" className="font-medium text-[#010851] hover:text-gray-500">
           Forgot your password?
         </a>
       </div>

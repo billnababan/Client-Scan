@@ -7,10 +7,10 @@ import FormRepo from "../../components/FormRepo";
 const Dashboard = () => {
   return (
     <div>
-      <div className="h-screen">
+      <div>
         <Navbar />
-        <FormRepo />
       </div>
+      <FormRepo />
       <Footer />
     </div>
   );

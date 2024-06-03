@@ -15,7 +15,9 @@ import "react-toastify/dist/ReactToastify.css";
 import AuthContext, { AuthProvider } from "./context/AuthContext"; // Pastikan untuk mengimpor AuthProvider
 import ManageUser from "./pages/adminDashboard/ManageUser";
 import ManageData from "./pages/adminDashboard/ManageData";
-
+import RepoStorage from "./pages/userDashboard/RepoStorage";
+import Profile from "./pages/userDashboard/Profile";
+import ForgetPassword from "./components/ForgetPassword";
 // ...
 
 const ROLES = {
@@ -35,6 +37,7 @@ function App() {
             <Route path="/" element={<Beranda />} />
 
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/resetPassword" element={<ForgetPassword />} />
             <Route path="/register" element={<RegisterPage />} />
 
             {/* Router Navigate Dari User Admin */}
@@ -47,10 +50,10 @@ function App() {
             {/* Router Navigate Dari User Client */}
             <Route element={<RequireAuth allowedRoles={[ROLES.CLIENT]} />}>
               <Route path="/user-dashboard" element={<Dashboard />} />
+              <Route path="/repo" element={<RepoStorage />} />
+              {/* <Route path="/detailscan/:id" element={<DetailScan />} /> */}
+              <Route path="/profile" element={<Profile />} />
             </Route>
-
-            {/* User Path */}
-            {/* <Route path="/user-dashboard" element={<RequireAuth allowedRoles={[ROLES.CLIENT]} redirectTo="/login" component={Dashboard} />} /> */}
 
             {/* Public Access */}
             <Route path="/unauthorized" element={<Unauthorized />} />
@@ -59,8 +62,6 @@ function App() {
         </Routes>
       </Router>
       <ToastContainer />
-      {/* </div>
-      </div> */}
     </AuthProvider>
   );
 }

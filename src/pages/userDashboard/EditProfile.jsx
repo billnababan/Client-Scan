@@ -1,39 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai"; // Import ikon mata (eye) dari React Icons
 
-const EditProfile = ({ user, onClose, onUpdate }) => {
+import CardProfile from "./CardProfile";
+
+const EditProfile = ({ user }) => {
   const [userData, setUserData] = useState({});
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+  const userDataString = localStorage.getItem("user");
+  const userexist = JSON.parse(userDataString);
+  const [userId, setUserId] = useState(null);
+  const [fullName, setFullName] = useState(""); // Definisikan fullName
+  const [email, setEmail] = useState(""); // Definisikan email
+  const [currentPassword, setCurrentPassword] = useState(""); // Definisikan currentPassword
+  const [newPassword, setNewPassword] = useState(""); // Definisikan newPassword
 
-  useEffect(() => {
-    setUserData(user);
-  }, [user]);
+  const [isSaveSuccessModalOpen, setIsSaveSuccessModalOpen] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
 
-  const toggleShowCurrentPassword = () => {
-    setShowCurrentPassword(!showCurrentPassword);
+  const closeSaveSuccessModal = () => {
+    setIsSaveSuccessModalOpen(false);
   };
 
-  const toggleShowNewPassword = () => {
-    setShowNewPassword(!showNewPassword);
-  };
-
-  const eyeIconCurrentPassword = showCurrentPassword ? faEye : faEyeSlash;
-  const eyeIconNewPassword = showNewPassword ? faEye : faEyeSlash;
-
-  // console.log("show user data", userData);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [email, setEmail] = useState();
-  // console.log(email);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserData({ ...userData, [name]: value });
+  const showSaveSuccessModal = () => {
+    setIsSaveSuccessModalOpen(true);
   };
 
   const handleChangePassword = (e) => {
@@ -42,28 +37,44 @@ const EditProfile = ({ user, onClose, onUpdate }) => {
       setCurrentPassword(value);
     } else if (name === "newPassword") {
       setNewPassword(value);
+      if (value.trim() === "") {
+        setIsPasswordValid(true);
+        setPasswordErrorMessage("");
+      } else {
+        const isValid = validatePassword(value);
+        setIsPasswordValid(isValid);
+        if (!isValid) {
+          setPasswordErrorMessage("Passwords must consist of at least 8 characters, including uppercase letters, lowercase letters, numbers, and symbols.");
+        } else {
+          setPasswordErrorMessage("");
+        }
+      }
     }
+    const isFormFilled = fullName.trim() !== "" && email.trim() !== "" && currentPassword.trim() !== "" && newPassword.trim() !== "";
+    setIsFormValid(isFormFilled);
   };
 
-  const userDataString = localStorage.getItem("user");
-  const userexist = JSON.parse(userDataString);
-  // console.log(userexist[0].id);
+  const validatePassword = (password) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[a-zA-Z\d\W_]{8,}$/;
+    return regex.test(password);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const updatedUserData = {
-        fullname: fullname.value,
+        fullname: fullName,
         email: email,
         password: currentPassword,
         newPassword: newPassword,
         role_id: 1,
       };
-      // console.log(updatedUserData);
-      const response = await axios.put(`http://localhost:4000/api/auth/updateUsers/${userexist[0].id}`, updatedUserData);
+
+      const response = await axios.put(`http://localhost:4000/api/auth/updateUsers/${userexist.id}`, updatedUserData);
       setUserData(response.data);
-      onUpdate(response.data); // Pass updated user data to parent component
-      onClose(); // Close the pop up after updating
+
+      showSaveSuccessModal();
+
       toast.success("Update user profile is success");
     } catch (error) {
       console.error("Error updating user:", error);
@@ -72,74 +83,92 @@ const EditProfile = ({ user, onClose, onUpdate }) => {
   };
 
   return (
-    <div className="relative inset-0 flex  items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white rounded-lg overflow-hidden border border-gray-300 w-96">
-        <h2 className="text-lg font-semibold bg-blue-500 text-white py-5 px-6">Edit User</h2>
-        <form onSubmit={handleSubmit} className="p-9">
-          <div className="mb-6">
-            <label htmlFor="fullname" className="block text-sm font-medium text-gray-700">
-              Full Name
-            </label>
-            <input
-              type="text"
-              id="fullname"
-              name="fullname"
-              value={userData.fullname}
-              onChange={handleChange}
-              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-            />
-          </div>
-          <div className="mb-6">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={userData.email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-            />
-          </div>
-          <div className="mb-6 relative">
-            <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">
-              Current Password
-            </label>
-            <input
-              type={showCurrentPassword ? "text" : "password"}
-              id="currentPassword"
-              name="currentPassword"
-              value={currentPassword}
-              onChange={handleChangePassword}
-              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md pr-10"
-            />
-            <FontAwesomeIcon icon={eyeIconCurrentPassword} className="absolute right-3 top-8 transform -translate-y-1/2 cursor-pointer" onClick={toggleShowCurrentPassword} />
-          </div>
-          <div className="mb-6 relative">
-            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
-              New Password
-            </label>
-            <input
-              type={showNewPassword ? "text" : "password"}
-              id="newPassword"
-              name="newPassword"
-              value={newPassword}
-              onChange={handleChangePassword}
-              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md pr-10"
-            />
-            <FontAwesomeIcon icon={eyeIconNewPassword} className="absolute right-3 top-8 transform -translate-y-1/2 cursor-pointer" onClick={toggleShowNewPassword} />
-          </div>
-          <div className="flex justify-end">
-            <button type="button" className="mr-2 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-md" onClick={onClose}>
-              Cancel
-            </button>
-            <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
-              Update
-            </button>
+    <div className="flex items-center h-screen  ">
+      <div className="container mx-auto flex">
+        <form onSubmit={handleSubmit} className="flex w-full ml-16 mr-16 mt-10 rounded-t-lg bg-gray-100">
+          <div className="flex flex-col w-full gap-y-6 ">
+            <p className="shadow-lg  text-center font-bold text-lg py-3 w-full textBg">UPDATE PROFILE</p>
+            <div className="grid grid-cols-1 gap-y-6">
+              <div className="flex items-center justify-between">
+                <label htmlFor="fullname" className="text-sm font-medium  px-3 text-gray-700 hover:text-primary w-1/4 duration-200 transform ">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  id="fullname"
+                  name="fullname"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="text-sm focus:ring-indigo-500 focus:border-indigo-500 w-3/4 p-2   border-gray-300 rounded-md mr-14"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <label htmlFor="email" className="text-sm font-medium px-3 text-gray-700 hover:text-primary w-1/4 duration-200 transform ">
+                  Email
+                </label>
+                <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} className="text-sm focus:ring-indigo-500 focus:border-indigo-500 w-3/4 p-2   border-gray-300 rounded-md mr-14" />
+              </div>
+              <div className="flex items-center justify-between relative">
+                <label htmlFor="currentPassword" className="text-sm font-medium px-3 text-gray-700 hover:text-primary w-1/4 duration-200 transform ">
+                  Current Password
+                </label>
+                <input
+                  type={showCurrentPassword ? "text" : "password"}
+                  id="currentPassword"
+                  name="currentPassword"
+                  value={currentPassword}
+                  onChange={handleChangePassword}
+                  className="text-sm focus:ring-indigo-500 focus:border-indigo-500 w-3/4 p-2  border-gray-300 rounded-md pr-10 mr-14"
+                />
+                {showCurrentPassword ? (
+                  <AiFillEyeInvisible className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer mr-14" onClick={() => setShowCurrentPassword(!showCurrentPassword)} />
+                ) : (
+                  <AiFillEye className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer mr-14" onClick={() => setShowCurrentPassword(!showCurrentPassword)} />
+                )}
+              </div>
+              <div className="flex items-center justify-between relative">
+                <label htmlFor="newPassword" className="text-sm font-medium text-gray-700 px-3 hover:text-primary w-1/4 duration-200 transform ">
+                  New Password
+                </label>
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  id="newPassword"
+                  name="newPassword"
+                  value={newPassword}
+                  onChange={handleChangePassword}
+                  className={`text-sm focus:ring-indigo-500 focus:border-indigo-500 w-3/4 p-2 mr-14 border-gray-300 rounded-md pr-10 ${isPasswordValid ? "" : "border-red-500"}`}
+                />
+                {showNewPassword ? (
+                  <AiFillEyeInvisible className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer mr-14" onClick={() => setShowNewPassword(!showNewPassword)} />
+                ) : (
+                  <AiFillEye className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer mr-14" onClick={() => setShowNewPassword(!showNewPassword)} />
+                )}
+              </div>
+              {!isPasswordValid && <p className="text-lg text-red-500 px-10 text-left">{passwordErrorMessage}</p>}
+            </div>
+            <div className="flex justify-end mb-5">
+              <button
+                type="submit"
+                disabled={!isFormValid}
+                className={`bg-blue-500 ${!isFormValid ? "opacity-50 cursor-not-allowed" : "hover:bg-primary"} text-white px-4 mr-14 py-3 text-lg hover:rounded-md duration-200 transform hover:scale-110`}
+              >
+                Save
+              </button>
+            </div>
           </div>
         </form>
+        <CardProfile />
       </div>
+      {isSaveSuccessModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+          <div className="bg-white p-8 rounded-md">
+            <p className="text-lg font-semibold text-center">Save User is Success!!</p>
+            <button onClick={closeSaveSuccessModal} className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
