@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
+
 import logoProfile from "../../../src/assets/user.png";
+import axiosInstance from "../../hooks/axios";
 
 const CardProfile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -30,7 +31,7 @@ const CardProfile = () => {
           },
         };
 
-        const response = await axios.post(`http://localhost:4000/api/auth/uploadProfileImage/${userIdFromStorage}`, { config, userId: userIdFromStorage });
+        const response = await axiosInstance.post(`/uploadProfileImage/${userIdFromStorage}`, { config, userId: userIdFromStorage });
         console.log(userId);
 
         console.log("Profile picture uploaded successfully", response.data);

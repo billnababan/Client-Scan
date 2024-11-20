@@ -8,11 +8,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useAuth from "../hooks/useAuth";
-import axios from "axios";
+
 import Loading from "./Loading";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Header from "../components/Header";
 import { TypeAnimation } from "react-type-animation";
+import axiosInstance from "../hooks/axios";
 
 const Login = () => {
   const { setAuth } = useAuth();
@@ -58,7 +59,7 @@ const Login = () => {
     };
 
     try {
-      const response = await axios.post("http://localhost:4000/api/auth/login", formData);
+      const response = await axiosInstance.post("/users", formData);
 
       const token = response?.data?.token;
       const access = response?.data?.access;

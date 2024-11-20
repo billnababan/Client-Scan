@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import { toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
+import axiosInstance from "../hooks/axios";
 
 const FormRepo = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const FormRepo = () => {
         // Simpan userId ke dalam state lokal
         setUserId(userIdFromStorage);
 
-        const response = await axios.post(`http://localhost:4000/api/detectt/deteksi`, { url, userId: userIdFromStorage });
+        const response = await axiosInstance.post(`/deteksi`, { url, userId: userIdFromStorage });
         navigate("/repo");
         toast.success("Scanning Is Success!!");
       } else {

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+
 import { Link } from "react-router-dom";
 import { BiSolidPencil } from "react-icons/bi";
 import { FaTrashCan } from "react-icons/fa6";
 import { FcNext, FcPrevious } from "react-icons/fc";
+import axiosInstance from "../hooks/axios";
 
 export default function Modal() {
   const [repos, setRepos] = useState([]);
@@ -22,7 +23,7 @@ export default function Modal() {
           return;
         }
 
-        const response = await axios.get(`http://localhost:4000/api/detectt/repoUser/${userData.id}`);
+        const response = await axiosInstance.get(`/deteksi/${userData.id}`);
         const credentials = response.data.credentials;
 
         function getPropertyValue(dataString, property) {
@@ -71,7 +72,7 @@ export default function Modal() {
 
   const deleteRepo = async (repoId) => {
     try {
-      await axios.delete(`http://localhost:4000/api/detectt/deleterepo/${repoId}`);
+      await axiosInstance.delete(`/deteksi/${repoId}`);
       const updateRepo = repos.filter((repo) => repo.id !== repoId);
       setRepos(updateRepo);
     } catch (error) {

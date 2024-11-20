@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
+
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai"; // Import ikon mata (eye) dari React Icons
 
 import CardProfile from "./CardProfile";
+import axiosInstance from "../../hooks/axios";
 
 const EditProfile = ({ user }) => {
   const [userData, setUserData] = useState({});
@@ -70,7 +71,7 @@ const EditProfile = ({ user }) => {
         role_id: 1,
       };
 
-      const response = await axios.put(`http://localhost:4000/api/auth/updateUsers/${userexist.id}`, updatedUserData);
+      const response = await axiosInstance.put(`/users/${userexist.id}`, updatedUserData);
       setUserData(response.data);
 
       showSaveSuccessModal();

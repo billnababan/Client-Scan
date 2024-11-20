@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+
 import * as XLSX from "xlsx";
 import { BiSolidPencil } from "react-icons/bi";
 import { FaTrashCan } from "react-icons/fa6";
 import { FcNext } from "react-icons/fc";
 import { FcPrevious } from "react-icons/fc";
+import axiosInstance from "../hooks/axios";
 
 export default function Modal() {
   const [showModal, setShowModal] = useState(false);
@@ -28,7 +29,7 @@ export default function Modal() {
           return;
         }
 
-        const response = await axios.get(`http://localhost:4000/api/detectt/repoUser/${userData.id}`);
+        const response = await axiosInstance.get(`/deteksi/${userData.id}`);
         const credentials = response.data.credentials;
 
         // Function untuk membersihkan string diff dan menghilangkan duplikat
@@ -117,7 +118,7 @@ export default function Modal() {
 
   const deleteRepo = async (repoId) => {
     try {
-      await axios.delete(`http://localhost:4000/api/detectt/deleterepo/${repoId}`);
+      await axiosInstance.delete(`/deteksi/${repoId}`);
       const updateRepo = repos.filter((repo) => repo.id !== repoId);
       setRepos(updateRepo);
     } catch (error) {

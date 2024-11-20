@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaTrashCan } from "react-icons/fa6";
 import { BiSolidDetail } from "react-icons/bi";
+import axiosInstance from "../hooks/axios";
 
 const ManageDataContent = () => {
   const [repos, setRepos] = useState([]);
@@ -13,7 +14,7 @@ const ManageDataContent = () => {
   useEffect(() => {
     const fetchRepo = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/detectt/allrepo");
+        const response = await axiosInstance.get("/deteksi");
         console.log(response.data);
         setRepos(response.data.dataRepo);
       } catch (error) {
@@ -38,7 +39,7 @@ const ManageDataContent = () => {
 
   const handleDeleteRepo = async (repoId) => {
     try {
-      await axios.delete(`http://localhost:4000/api/detectt/deleterepo/${repoId}`);
+      await axiosInstance.delete(`/deteksi/${repoId}`);
       const updateRepo = repos.filter((repo) => repo.id !== repoId);
       setRepos(updateRepo);
     } catch (error) {

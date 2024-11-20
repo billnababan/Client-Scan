@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+
 import { BiSolidPencil } from "react-icons/bi";
 import { FaTrashCan } from "react-icons/fa6";
 
 import EditUsers from "./EditUsers";
 import SidebarAdmin from "../../components/NewSidebar";
+import axiosInstance from "../../hooks/axios";
 
 const ManageUserProfile = () => {
   const [users, setUsers] = useState([]);
@@ -16,7 +17,7 @@ const ManageUserProfile = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/auth/getAll");
+        const response = await axiosInstance.get("/users");
         setUsers(response.data.roles);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -37,7 +38,7 @@ const ManageUserProfile = () => {
 
   const handleDeleteUser = async (userId) => {
     try {
-      await axios.delete(`http://localhost:4000/api/auth/deleteUsers/${userId}`);
+      await axiosInstance.delete(`/users/${userId}`);
       const updatedUsers = users.filter((user) => user.id !== userId);
       setUsers(updatedUsers);
     } catch (error) {
@@ -64,7 +65,13 @@ const ManageUserProfile = () => {
       <div className="max-w-4xl w-full mx-auto">
         <div className="flex items-center mb-3">
           <p className="font-bold mr-2 px-2 py-2 ml-2  duration-200 hover:underline hover:text-blue-500">Search :</p>
-          <input type="text" placeholder="Search" className="ml-1 px-1 py-1 hover:rounded-sm space-x-2 duration-200 transform hover:scale-95 border border-gray-300" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          <input
+            type="text"
+            placeholder="Search"
+            className="ml-1 px-1 py-1 hover:rounded-sm space-x-2 duration-200 transform hover:scale-95 border border-gray-300"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
 
         <div className="overflow-auto md:block hidden ">

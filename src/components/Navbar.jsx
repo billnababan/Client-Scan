@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
+
 import logo from "../assets/Logo-web.jpeg";
 import { FaBars, FaXmark } from "react-icons/fa6";
 import { Link, useNavigate, useLocation } from "react-router-dom";

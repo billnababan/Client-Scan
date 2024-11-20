@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+
+import axiosInstance from "../hooks/axios";
 
 const ForgetPassword = () => {
   const [email, setEmail] = useState("");
@@ -11,13 +12,13 @@ const ForgetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:4000/api/resetpassword", { userId: email }); // Sesuaikan dengan ID pengguna atau data lain yang diperlukan
+      const response = await axiosInstance.post("/resetpassword", { userId: email }); // Sesuaikan dengan ID pengguna atau data lain yang diperlukan
       console.log(response.data); // Tampilkan pesan sukses atau error
     } catch (error) {
       console.error("Error:", error.response.data.message);
     }
   };
-  
+
   return (
     <div className="loginBg min-h-screen flex items-center justify-center bg-gray-100">
       <div className="px-4 py-8 bg-white rounded-lg shadow-xl w-full max-w-md">

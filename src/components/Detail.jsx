@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+
 import * as XLSX from "xlsx";
 import { useParams } from "react-router-dom";
+import axiosInstance from "../hooks/axios";
 
 export default function Detail() {
   const [dataDetail, setDataDetail] = useState();
@@ -11,7 +12,7 @@ export default function Detail() {
   useEffect(() => {
     const fetchRepoDetail = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/api/detectt/repoUser/${id}`);
+        const response = await axiosInstance.get(`/deteksi/${id}`);
         const credentials = response.data.credentials;
 
         function getPropertyValue(dataString, property) {

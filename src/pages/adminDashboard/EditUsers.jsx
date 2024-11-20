@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
+
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axiosInstance from "../../hooks/axios";
 
 const EditUsers = ({ user, onClose, onUpdate }) => {
   const [userData, setUserData] = useState(user);
@@ -14,7 +15,7 @@ const EditUsers = ({ user, onClose, onUpdate }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`http://localhost:4000/api/auth/updateUsers/${userData.id}`, userData);
+      const response = await axiosInstance.put(`/users/${userData.id}`, userData);
       setUserData(response.data);
       onUpdate(response.data); // Pass updated user data to parent component
       onClose(); // Close the pop up after updating

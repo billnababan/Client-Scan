@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import axios from "axios";
+import axiosInstance from "../hooks/axios";
 
 const fields = registerFields;
 let fieldsState = {};
@@ -56,7 +56,7 @@ export default function Register() {
 
   const createAccount = async () => {
     try {
-      const response = await axios.post("http://localhost:4000/api/auth/register", {
+      const response = await axiosInstance.post("/users", {
         fullname: registerState.fullname,
         email: registerState.email,
         password: registerState.password,
