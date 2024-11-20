@@ -41,12 +41,12 @@ const SidebarAdmin = ({ isOpen, onToggleSidebar }) => {
 
   const Menus = [
     { title: "Dashboard", icon: <MdOutlineDashboard />, link: "/admin-dashboard" },
-    { title: "Manage Data", icon: <MdOutlineManageAccounts />, gap: true, link: "/admin-dashboard/manage-data" },
+    { title: "Manage Data", icon: <MdOutlineManageAccounts />, link: "/admin-dashboard/manage-data" },
     { title: "Manage User", icon: <MdOutlineManageAccounts />, link: "/admin-dashboard/manage-user" },
   ];
 
   return (
-    <>
+    <div className="bg-primary relative h-full">
       <div className="fixed top-4 left-2 cursor-pointer z-10 h-screen" onClick={handleSidebarToggle}>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-white">
           <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -81,7 +81,7 @@ const SidebarAdmin = ({ isOpen, onToggleSidebar }) => {
           </div>
         </ul>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -4,7 +4,6 @@ import useAuth from "../hooks/useAuth";
 
 const PublicRoute = ({ element, redirectTo = "/" }) => {
   const { auth } = useAuth();
-
   return auth.user ? <Navigate to={redirectTo} replace /> : element;
 };
 

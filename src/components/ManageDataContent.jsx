@@ -54,12 +54,12 @@ const ManageDataContent = () => {
   // };
 
   return (
-    <div className="h-screen w-full  justify-center items-center loginBg">
-      <h1 className="text-xl text-white p-2 text-center">Manage Data Repository</h1>
+    <div className="  w-full  justify-center items-center ">
+      <h1 className="text-xl text-black font-bold p-2 text-center mt-14 ">Manage Data Repository</h1>
 
       <div className="max-w-4xl w-full mx-auto">
         <div className="flex items-center mb-3">
-          <p className=" font-medium mr-2 px-2 py-2 ml-2 text-white duration-200 hover:underline hover:text-blue-500">Search :</p>
+          <p className="  mr-2 px-2 py-2 ml-2 text-black font-bold duration-200 hover:underline hover:text-blue-500">Search :</p>
           <input type="text" placeholder="Search" className="ml-1 px-1 py-1 hover:rounded-sm duration-200 transform hover:scale-95 border border-gray-300" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
         </div>
 
@@ -75,10 +75,10 @@ const ManageDataContent = () => {
             <tbody className="bg-white divide-y divide-gray-100">
               {currentRepo.map((repo, index) => (
                 <tr key={repo} className={repo === 1 || repo === 3 ? "bg-gray-200" : ""}>
-                  <td className="p-3 text-blue-500 text-center whitespace-nowrap text-blue hover:underline text-xs">{index + indexOfFirstRepo + 1}</td>
-                  <td className="px-2 py-4   whitespace-nowrap text-xs ">{repo.repo_url}</td>
+                  <td className="p-3 text-blue-500 text-center whitespace-nowrap text-blue hover:underline text-xs font-semibold">{index + indexOfFirstRepo + 1}</td>
+                  <td className="px-2 py-4 font-semibold   whitespace-nowrap text-xs ">{repo.repo_url}</td>
                   <td className="px-2 py-4  text-xs text-center  whitespace-nowrap">
-                    <button onClick={() => handleDeleteRepo(repo.id)} className="bg-red-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md duration-200 transform hover:scale-110">
+                    <button onClick={() => handleDeleteRepo(repo.id)} className="bg-red-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md font-semibold duration-200 transform hover:scale-110">
                       Delete
                     </button>
                   </td>
@@ -93,7 +93,7 @@ const ManageDataContent = () => {
             <div key={index} className="bg-white space-y-3 p-2 rounded-lg shadow">
               <div className="flex items-center space-x-2 text-sm">
                 <div className="text-blue-500 text-center text-xs hover:underline w-20">{`No ${index + 1}`}</div>
-                <div className="text-xs hover:underline">{repo.repo_url}</div>
+                <div className="text-xs hover:underline font-semibold">{repo.repo_url}</div>
                 <div className="p-3 text-xs text-center items-center text-gray-700 ">
                   <button onClick={() => handleDeleteRepo(repo.id)} className="bg-red-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md duration-200 transform hover:scale-110 items-center">
                     Delete
@@ -104,7 +104,7 @@ const ManageDataContent = () => {
           ))}
         </div>
 
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center mt-4 mb-6">
           <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className="mr-2 hover:bg-gray-300 px-4 py-2 rounded-md bg-blue-500 duration-200 transform hover:scale-95">
             Prev
           </button>

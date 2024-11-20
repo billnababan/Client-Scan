@@ -10,11 +10,12 @@ export default function Modal() {
   const [showModal, setShowModal] = useState(false);
   const [repos, setRepos] = useState([]);
   const [selectedCredential, setSelectedCredential] = useState(null);
+  const [exportRowIndex, setExportRowIndex] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [reposPerPage] = useState(5);
   const [detailData, setDetailData] = useState(null); // State untuk menyimpan detail data
-  const [dataModal, setDataModal] = useState();
+  const [dataModal, setDataModal] = useState(null);
 
   useEffect(() => {
     const fetchRepoByUserId = async () => {
@@ -30,17 +31,17 @@ export default function Modal() {
         const response = await axios.get(`http://localhost:4000/api/detectt/repoUser/${userData.id}`);
         const credentials = response.data.credentials;
 
-        // Function untuk membersihkan string diff
+        // Function untuk membersihkan string diff dan menghilangkan duplikat
         function getPropertyValue(dataString, property) {
           const regex = new RegExp(`"${property}"\\s*:\\s*"([^"]+)"`, "g");
-          const values = [];
+          const values = new Set();
           let match;
 
           while ((match = regex.exec(dataString)) !== null) {
-            values.push(match[1]);
+            values.add(match[1]);
           }
 
-          return values;
+          return Array.from(values);
         }
 
         const allData = credentials.map((item) => ({
@@ -123,124 +124,106 @@ export default function Modal() {
       console.error("Error deleting repo:", error);
     }
   };
-  const handleExportExcel = () => {
-    const rowData = []; // Inisialisasi array untuk menampung data baris
+  const handleExportExcel = (index) => {
+    const rowData = [
+      ["No", "Date", "Diff", "Path", "Print Diff", "Reason"],
+      [index + 1, dataModal.date[index], dataModal.diff[index], dataModal.path[index], dataModal.printDiff[index], dataModal.reason[index]],
+    ];
 
-    // Menambahkan header tabel ke array data
-    const headerRow = [];
-    document.querySelectorAll("#modalTable th").forEach((cell) => {
-      headerRow.push(cell.textContent.trim());
-    });
-    rowData.push(headerRow);
-
-    // Menambahkan data baris ke array data
-    const dataRows = document.querySelectorAll("#modalTable tbody tr");
-    dataRows.forEach((row) => {
-      const cellData = [];
-      row.querySelectorAll("td").forEach((cell) => {
-        cellData.push(cell.textContent.trim());
-      });
-      rowData.push(cellData);
-    });
-
-    // Membuat workbook baru dan menambahkan sheet dengan data yang telah dipersiapkan
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet(rowData);
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
-    // Mengunduh file Excel
-    XLSX.writeFile(wb, "data.xlsx");
+    XLSX.writeFile(wb, `data-row-${index + 1}.xlsx`);
   };
 
   // Fungsi untuk mendapatkan nilai properti tertentu dari string JSON
 
   return (
     <>
-      {showModal && (
+      {showModal && dataModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div ref={modalRef} className="bg-white rounded-lg overflow-hidden border border-gray-300 w-[1200px] max-h-[75vh] overflow-y-auto">
+          <div ref={modalRef} className="bg-white rounded-lg overflow-hidden border border-gray-300 w-[1200px] max-h-[80vh] overflow-y-auto">
             <span className="absolute top-0 right-0 m-4 cursor-pointer" onClick={handleCloseModal}>
               &times;
             </span>
-            <div className="p-4">
-              {showModal && (
-                <div className="bg-white text-black  ">
-                  <h2 className="text-lg font-semibold bg-blue-500 text-white py-5 px-6 text-center rounded-t-lg">Detail Scanning</h2>
-                  <div className="overflow-x-auto">
-                    <table className="w-full" id="modalTable">
-                      <thead className="bg-gray-400 shadow-lg border-b-2 border-gray-300 ">
-                        <tr>
-                          {/* <th className="p-3 text-xs font-semibold tracking-wide whitespace-nowrap ">Branch</th>
-                          <th className="p-3 text-xs font-semibold  max-w-8 w-8">Commit Hash</th> */}
-                          <th className="p-3 text-xs font-semibold tracking-wide whitespace-nowrap ">No</th>
-                          <th className="p-3 text-xs font-semibold tracking-wide whitespace-nowrap ">Date</th>
-                          <th className="p-3 text-xs font-semibold tracking-wide whitespace-nowrap ">Credential Found</th>
-                          <th className="p-3 text-xs font-semibold tracking-wide whitespace-nowrap ">Path</th>
+            <div className="p-4 ">
+              <h2 className="text-lg font-semibold bg-white text-black py-3 px-4 text-center rounded-t-lg">Detail Scanning</h2>
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-white border-collapse" id="modalTable">
+                  <thead className=" shadow-lg border-t-2 border-l-2 border-r-2 border-white sticky top-0 bg-blue-500 text-white w-auto ">
+                    <tr>
+                      <th className="p-3 text-sm font-bold tracking-wide whitespace-nowrap ">No</th>
+                      <th className="p-3 text-sm font-bold tracking-wide whitespace-nowrap ">Date</th>
+                      <th className="p-3 text-sm font-bold tracking-wide whitespace-nowrap ">Diff</th>
+                      <th className="p-3 text-sm font-bold tracking-wide whitespace-nowrap ">Path</th>
+                      <th className="p-3 text-sm font-bold tracking-wide whitespace-nowrap ">Print Diff</th>
+                      <th className="p-3 text-sm font-bold tracking-wide whitespace-nowrap ">Reason</th>
+                      <th className="p-3 text-sm font-bold tracking-wide whitespace-nowrap ">Validation</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {dataModal.branch.map((branch, index) => (
+                      <tr key={index} className="hover:bg-gray-200 transition-colors duration-200">
+                        <td className="p-3 text-xs py-2 font-bold border-r-[2px] border-blue-500 border-b-[2px]">{index + 1}</td>
 
-                          <th className="p-1 text-xs font-semibold tracking-wide whitespace-nowrap ">Reason</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {repos.map((item, index) => (
-                          <tr>
-                            <td className="p-3 text-xs py-2 w-16 border-r-4 border-blue-500">{index + 1}</td>
-                            {/* <td className="p-3 text-xs py-2 w-16 border-r-4 border-blue-500">{item.branch}</td>
-                            <td className="text-xs py-2 border-r-4 border-blue-500">{item.commitHash}</td> */}
-                            <td className="p-3 text-xs py-2 border-r-4 border-blue-500">{item.date}</td>
-                            <td className="p-3 text-xs py-2 w-32  border-r-4 border-blue-500">{item.diff}</td>
-                            <td className="p-3 text-xs py-2  border-r-4 border-blue-500">{item.path}</td>
+                        <td className="p-3 text-xs py-2 border-r-[2px] border-blue-500 border-b-[2px]">{dataModal.date[index]}</td>
+                        <td className="p-3 text-xs py-2 border-r-[2px] border-blue-500 border-b-[2px] table-cell-diff">{dataModal.diff[index]}</td>
+                        <td className="p-3 text-xs py-2 border-r-[2px] border-blue-500 border-b-[2px] ">{dataModal.path[index]}</td>
+                        <td className="p-3 text-xs py-2 border-r-[2px] border-blue-500 border-b-[2px] table-cell-print">{dataModal.printDiff[index]}</td>
+                        <td className="p-3 text-xs py-2 border-r-[2px] border-blue-500 border-b-[2px]">{dataModal.reason[index]}</td>
+                        <td className="p-3 text-xs py-2 border-r-[2px] border-blue-500 border-b-[2px]">
+                          <div className="flex space-x-2 gap-3">
+                            <button
+                              onClick={() => {
+                                setExportRowIndex(index);
+                                document.getElementById(`exportExcelButton-${index}`).classList.remove("hidden");
+                                document.getElementById(`validButton-${index}`).classList.add("hidden");
+                                document.getElementById(`notValidButton-${index}`).classList.add("hidden");
+                              }}
+                              className="rounded-xl border-2 border-dashed border-green-600 px-4 py-3 font-semibold uppercase text-white bg-green-600 transition-all duration-300 hover:translate-x-[-4px] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] text-[8px] active:translate-x-[0px] active:translate-y-[0px] active:rounded-2xl active:shadow-none"
+                              id={`validButton-${index}`}
+                            >
+                              Valid
+                            </button>
 
-                            <td className="p-3 text-xs py-2 w-16">{item.reason}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    <div className="flex justify-center space-x-4 mt-3">
-                      <button
-                        onClick={handleExportExcel}
-                        className="rounded-xl border-2 border-dashed border-green-700 px-6 py-3 font-semibold uppercase text-white bg-green-700 transition-all duration-300 hover:translate-x-[-4px] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] text-[11px] active:translate-x-[0px] active:translate-y-[0px] active:rounded-2xl active:shadow-none hidden"
-                        id="exportExcelButton"
-                      >
-                        Export to Excel
-                      </button>
-                      <button onClick={handleCloseModal} className="bg-blue-500 text-white px-3 py-1 rounded-md transition-all duration-200 hover:bg-blue-600 hidden" id="closeModalButton">
-                        Close
-                      </button>
-                      <button
-                        onClick={() => {
-                          setTimeout(() => {
-                            document.getElementById("exportExcelButton").classList.remove("hidden");
-                            document.getElementById("or").classList.add("hidden");
-                            document.getElementById("validButton").classList.add("hidden");
-                            document.getElementById("notValidButton").classList.add("hidden");
-                          }, 3000); // Waktu penundaan dalam milidetik (5 detik)
-                        }}
-                        className="rounded-xl border-2 border-dashed border-green-600 px-3 py-3 font-semibold uppercase text-white bg-green-600 transition-all duration-300 hover:translate-x-[-4px] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] text-[10px] active:translate-x-[0px] active:translate-y-[0px] active:rounded-2xl active:shadow-none"
-                        id="validButton"
-                      >
-                        Valid
-                      </button>
-                      <p className="text-[30px] hover:text-gray-500" id="or">
-                        ||
-                      </p>
-                      <button
-                        onClick={handleCloseModal}
-                        className="rounded-2xl border-2 border-dashed border-red-700 px-3 py-3 font-semibold uppercase text-white bg-red-700 transition-all duration-300 hover:translate-x-[-4px] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] text-[10px] active:translate-x-[0px] active:translate-y-[0px] active:rounded-2xl active:shadow-none"
-                        id="notValidButton"
-                      >
-                        Not Valid
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+                            <button
+                              onClick={() => {
+                                document.getElementById(`exportExcelButton-${index}`).classList.add("hidden");
+                                document.getElementById(`validButton-${index}`).classList.add("hidden");
+                                document.getElementById(`or-${index}`).classList.add("hidden");
+                              }}
+                              className="rounded-2xl border-2 border-dashed border-red-700 px-4 whitespace-nowrap py-3 font-semibold uppercase text-white bg-red-700 transition-all duration-300 hover:translate-x-[-4px] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] text-[8px] active:translate-x-[0px] active:translate-y-[0px] active:rounded-2xl active:shadow-none"
+                              id={`notValidButton-${index}`}
+                            >
+                              Not Valid
+                            </button>
+                          </div>
+
+                          <button
+                            onClick={() => handleExportExcel(index)}
+                            className="rounded-xl border-2 border-dashed border-green-700 px-6 py-3 font-semibold uppercase text-white bg-green-700 transition-all duration-300 hover:translate-x-[-4px] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] text-[8px] active:translate-x-[0px] active:translate-y-[0px] active:rounded-2xl active:shadow-none hidden"
+                            id={`exportExcelButton-${index}`}
+                          >
+                            Export to Excel
+                          </button>
+                          <button onClick={handleCloseModal} className="bg-blue-500 text-white px-3 py-1 rounded-md transition-all duration-200 hover:bg-blue-600 hidden" id="closeModalButton">
+                            Close
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
       )}
 
       <div className="mt-[67px] h-screen ">
-        <h1 className="text-xl text-blue-700 hover:text-blue-800 font-bold p-8 text-center px-4 mx-auto">Detail Scanning Repository</h1>
+        <div></div>
+        <h1 className="text-xl text-blue-700 hover:text-blue-800 font-bold p-8 text-center px-4 mx-auto ">Detail Scanning Repository</h1>
         <div className="overflow-auto rounded-lg md:block hidden ">
           <table className="w-[1000px] rounded-lg mx-auto bg-white ">
             <thead className="bg-gray-400 shadow-lg border-b-2 border-gray-300 ">
@@ -259,9 +242,7 @@ export default function Modal() {
                   <td className="border-[1px]  px-3 py-3 font-semibold uppercase text-black text-center  transition-all duration-300 hover:translate-x-[-4px] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] text-[12px] active:translate-x-[0px] active:translate-y-[0px] active:rounded-2xl active:shadow-none">
                     {index + indexOfFirstRepo + 1}
                   </td>
-                  <td className="  px-3 py-3 font-semibold  text-black text-center  transition-all duration-300 hover:translate-x-[-4px] hover:translate-y-[-4px]  hover:shadow-[4px_4px_0px_black] text-[12px] active:translate-x-[0px] active:translate-y-[0px] active:rounded-2xl active:shadow-none">
-                    {item.github}
-                  </td>
+                  <td className="  px-3 py-3 font-semibold  text-black text-center  transition-all duration-300     text-[12px]  ">{item.github}</td>
                   <td className="p-3 text-sm  whitespace-nowrap px-5 py-2 ">
                     <button
                       onClick={() => handleShowDetail(item.id)}
@@ -270,9 +251,7 @@ export default function Modal() {
                       Detail scanning
                     </button>
                   </td>
-                  <td className="  px-3 py-3 font-semibold uppercase text-black text-center  transition-all duration-300 hover:translate-x-[-4px] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] text-[10px] active:translate-x-[0px] active:translate-y-[0px] active:rounded-2xl active:shadow-none">
-                    {item.datetime}
-                  </td>
+                  <td className="  px-3 py-3 font-semibold uppercase text-black text-center  transition-all  text-[10px] ">{item.datetime}</td>
 
                   <td className="p-3 text-xs text-gray-700 whitespace-nowrap px-5 py-2">
                     <button
@@ -312,14 +291,6 @@ export default function Modal() {
             <FcPrevious />
           </button>
 
-          {currentPage > 3 && (
-            <span className="mx-1" onClick={() => paginate(1)}>
-              1
-            </span>
-          )}
-
-          {currentPage > 4 && <span className="mx-1">...</span>}
-
           {[...Array(Math.min(5, Math.ceil(repos.length / reposPerPage))).keys()].map((pageNumber) => (
             <button
               key={pageNumber}
@@ -329,14 +300,6 @@ export default function Modal() {
               {pageNumber + 1}
             </button>
           ))}
-
-          {currentPage < Math.ceil(repos.length / reposPerPage) - 3 && <span className="mx-1">...</span>}
-
-          {currentPage < Math.ceil(repos.length / reposPerPage) - 2 && (
-            <span className="mx-1" onClick={() => paginate(Math.ceil(repos.length / reposPerPage))}>
-              {Math.ceil(repos.length / reposPerPage)}
-            </span>
-          )}
 
           <button onClick={() => paginate(currentPage + 1)} disabled={indexOfLastRepo >= repos.length} className="ml-4 bg-gray-300  px-4 py-2 rounded-full duration-200   hover:scale-95 text-white">
             <FcNext />

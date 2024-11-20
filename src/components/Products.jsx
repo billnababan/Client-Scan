@@ -47,7 +47,7 @@ const Products = () => {
                 command over frontend and backend technologies, Bill excels in architecting seamless user experiences and scalable server-side solutions. His adeptness extends beyond mere coding proficiency, encompassing a deep
                 understanding of software architecture and best practices.
               </p>
-              <h5 className="text-primary text-xl font-semibold mb-2">Bill Jeff</h5>
+              {/* <h5 className="text-primary text-xl font-semibold mb-2">Bill Jeff</h5> */}
               <p>Full Stack Developer </p>
               <div>
                 <div className="flex items-center gap-8 flex-wrap">

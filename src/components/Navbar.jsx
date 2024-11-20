@@ -42,10 +42,6 @@ const Navbar = () => {
     toast.success("Logout successful!");
   };
 
-  // const handleEditProfile = () => {
-  //   setIsProfileOpen(true); // Show EditProfile modal when profile icon is clicked
-  // };
-
   const handleOutsideClick = (e) => {
     if (profileMenuRef.current && !profileMenuRef.current.contains(e.target)) {
       setIsProfileOpen(false);
@@ -113,7 +109,6 @@ const Navbar = () => {
           <div className="space-x-4 hidden md:flex items-center relative">
             {isLoggedIn ? (
               <div className="relative flex items-center" ref={profileMenuRef}>
-                {/* Garis lurus */}
                 <div className="absolute h-full right-16 top-0 bg-gray-300 w-px"></div>
 
                 {/* Logo Profil */}
@@ -122,7 +117,6 @@ const Navbar = () => {
                 {profil && (
                   <div className="absolute right-0 mt-[150px] w-40 bg-white shadow-lg rounded-lg py-1 z-10">
                     <ul>
-                      {/* Menu */}
                       <li className="px-4 text-[13px]  py-2 cursor-pointer hover:bg-gray-100 text-black">
                         <Link to="/profile">PROFILE</Link>
                       </li>

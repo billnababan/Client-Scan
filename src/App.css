@@ -59,3 +59,15 @@ header {
     transform: translateX(-100%);
   }
 }
+
+.table-cell-diff {
+  max-width: 350px;
+  word-wrap: break-word;
+  white-space: pre-wrap; /* Ensure newlines are respected */
+}
+
+.table-cell-print {
+  max-width: 200px;
+  word-wrap: break-word;
+  white-space: pre-wrap; /* Ensure newlines are respected */
+}

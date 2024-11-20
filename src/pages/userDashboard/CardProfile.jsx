@@ -30,11 +30,11 @@ const CardProfile = () => {
           },
         };
 
-        const response = await axios.post(`http://localhost:4000/api/auth/uploadProfileImage`, { config, userId: userIdFromStorage });
+        const response = await axios.post(`http://localhost:4000/api/auth/uploadProfileImage/${userIdFromStorage}`, { config, userId: userIdFromStorage });
+        console.log(userId);
 
         console.log("Profile picture uploaded successfully", response.data);
 
-        // Jika upload berhasil, update gambar profil yang ditampilkan
         setSelectedFile(fileInput);
       }
     } catch (error) {
@@ -43,7 +43,7 @@ const CardProfile = () => {
   };
 
   const handleFileInputChange = (e) => {
-    setFileInput(e.target.files[0]); // Simpan file input dalam state saat perubahan terjadi
+    setFileInput(e.target.files[0]);
   };
 
   return (
@@ -60,7 +60,7 @@ const CardProfile = () => {
           <p className="font-bold text-base py-3  textBg ">{userexist.email}</p>
         </div>
 
-        <h3 className="text-base text-primary text-left mx-4 font-semibold mt-2 ">New Profile Picture</h3>
+        {/* <h3 className="text-base text-primary text-left mx-4 font-semibold mt-2 ">New Profile Picture</h3>
         <div className="flex items-center justify-center mx-3 mt-3">
           <label htmlFor="profilePicture" className="block text-white text-xs  px-1 py-2  justify-center hover:rounded-md cursor-pointer duration-200">
             <input id="profilePicture" className="w-full text-xs text-gray-900 border hover:bg-gray-400 border-gray-300  cursor-pointer bg-gray-50 font-bold" type="file" onChange={handleFileInputChange} />
@@ -72,7 +72,7 @@ const CardProfile = () => {
           onClick={handleProfilePictureUpload}
         >
           Save Image
-        </button>
+        </button> */}
       </div>
     </div>
   );

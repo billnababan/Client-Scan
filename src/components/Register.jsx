@@ -25,7 +25,6 @@ export default function Register() {
     const { id, value } = e.target;
     setRegisterState({ ...registerState, [id]: value });
 
-    // Validasi password
     if (id === "password") {
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
       setPasswordValid(passwordRegex.test(value));
@@ -44,7 +43,6 @@ export default function Register() {
     e.preventDefault();
     console.log(registerState);
     if (emailValid && passwordValid) {
-      // Menambahkan kondisi passwordValid
       createAccount();
     } else {
       if (!emailValid) {
@@ -56,7 +54,6 @@ export default function Register() {
     }
   };
 
-  // handle Signup API Integration here
   const createAccount = async () => {
     try {
       const response = await axios.post("http://localhost:4000/api/auth/register", {
@@ -65,7 +62,6 @@ export default function Register() {
         password: registerState.password,
         confirm_password: registerState.confirm_password,
       });
-
       console.log("Response from server:", response.data);
       if (response.data.success) {
         setRegistrationSuccess(true);
@@ -79,19 +75,15 @@ export default function Register() {
   };
 
   useEffect(() => {
-    // Check if registration was successful and then navigate
     if (registrationSuccess) {
       const timer = setTimeout(() => {
         navigate("/login");
       }, 1000);
-
-      // Clear the timeout in case the component unmounts before the delay
       return () => clearTimeout(timer);
     }
   }, [registrationSuccess, navigate]);
 
   const handleLoginRedirect = () => {
-    // Redirect to the login page
     navigate("/login");
   };
 

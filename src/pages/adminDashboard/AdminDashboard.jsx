@@ -11,7 +11,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="grid grid-cols-[auto,1fr] h-full overflow-hidden">
+    <div className="grid grid-cols-[auto,1fr] overflow-hidden">
       {/* SidebarAdmin */}
       <div className="col-span-1">
         <SidebarAdmin isOpen={isSidebarOpen} onToggleSidebar={handleToggleSidebar} />

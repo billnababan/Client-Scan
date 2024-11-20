@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const EditUsers = ({ user, onClose, onUpdate }) => {
   const [userData, setUserData] = useState(user);
-
+  console.log(userData);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserData({ ...userData, [name]: value });
@@ -19,6 +19,7 @@ const EditUsers = ({ user, onClose, onUpdate }) => {
       onUpdate(response.data); // Pass updated user data to parent component
       onClose(); // Close the pop up after updating
       toast.success("Update user is Success");
+      console.log(response.data);
     } catch (error) {
       console.error("Error updating user:", error);
       toast.error("Update user is Failed");

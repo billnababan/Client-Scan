@@ -58,18 +58,18 @@ const ManageUserProfile = () => {
   };
 
   return (
-    <div className="h-screen w-full flex flex-col justify-center items-center loginBg">
-      <h1 className="text-xl text-white p-2 text-center">Manage Data Repository</h1>
+    <div className=" w-full justify-center items-center ">
+      <h1 className="text-xl text-black p-2 text-center  font-bold mt-14">Manage Data User</h1>
 
       <div className="max-w-4xl w-full mx-auto">
         <div className="flex items-center mb-3">
-          <p className="font-medium mr-2 px-2 py-2 ml-2 text-white duration-200 hover:underline hover:text-blue-500">Search :</p>
-          <input type="text" placeholder="Search" className="ml-1 px-1 py-1 hover:rounded-sm duration-200 transform hover:scale-95 border border-gray-300" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          <p className="font-bold mr-2 px-2 py-2 ml-2  duration-200 hover:underline hover:text-blue-500">Search :</p>
+          <input type="text" placeholder="Search" className="ml-1 px-1 py-1 hover:rounded-sm space-x-2 duration-200 transform hover:scale-95 border border-gray-300" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
         </div>
 
         <div className="overflow-auto md:block hidden ">
-          <table className="w-full table-auto border-collapse border border-gray-300 rounded-t-lg">
-            <thead className="bg-gray-200 shadow-lg border-b-2 border-gray-300 rounded-t-lg">
+          <table className="w-full table-auto border-collapse  border-black border-2 rounded-t-lg">
+            <thead className="bg-gray-200 shadow-lg border-b-2 border-black rounded-t-lg">
               <tr>
                 <th className="px-2 py-3 text-sm font-semibold tracking-wide text-center w-20">No</th>
                 <th className="px-2 py-3 text-sm font-semibold tracking-wide text-left">User E-mail</th>
@@ -117,7 +117,7 @@ const ManageUserProfile = () => {
           ))}
         </div>
 
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center mt-4 mb-8">
           <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className="mr-2 hover:bg-gray-300 px-4 py-2 rounded-md bg-blue-500 duration-200 transform hover:scale-95">
             Prev
           </button>
