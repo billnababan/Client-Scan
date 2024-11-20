@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { loginFields } from "../constants/FormField";
 import Input from "./Input";
+import axios from "axios";
 import FormAction from "../components/FormAction";
 import FormExtra from "../components/FormExtra";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -59,7 +60,7 @@ const Login = () => {
     };
 
     try {
-      const response = await axiosInstance.post("/users", formData);
+      const response = await axiosInstance.post("/login", formData);
 
       const token = response?.data?.token;
       const access = response?.data?.access;
@@ -70,7 +71,7 @@ const Login = () => {
       localStorage.setItem("access", JSON.stringify(access));
       localStorage.setItem("user", JSON.stringify(user));
 
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       toast.success("Login berhasil!");
       console.log("Nilai access:", access);
